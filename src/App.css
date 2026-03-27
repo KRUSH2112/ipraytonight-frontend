@@ -1,0 +1,227 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+  background: #f0f2f5;
+  color: #1a1a1a;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.header {
+  background: #2d5fa6;
+  color: white;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.logo-icon { font-size: 1.6rem; }
+.user-email { font-size: 0.85rem; opacity: 0.85; }
+
+.main {
+  display: flex;
+  flex: 1;
+  gap: 20px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+}
+
+.profile-card, .auth-card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+.avatar { font-size: 3rem; }
+.username { font-weight: 700; font-size: 1rem; }
+.user-email-small { font-size: 0.75rem; color: #666; text-align: center; }
+
+.auth-card h3 { font-size: 1rem; font-weight: 700; color: #2d5fa6; }
+
+.auth-input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.auth-switch {
+  font-size: 0.78rem;
+  color: #2d5fa6;
+  cursor: pointer;
+  text-align: center;
+}
+
+.auth-switch:hover { text-decoration: underline; }
+
+.btn-primary {
+  width: 100%;
+  background: #2d5fa6;
+  color: white;
+  border: none;
+  padding: 9px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.btn-primary:hover { background: #1e4a8a; }
+
+.btn-logout-full {
+  width: 100%;
+  background: #2d5fa6;
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.feed {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.feed-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.prayers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.prayer-card {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.prayer-avatar { font-size: 2rem; }
+
+.prayer-user {
+  font-weight: 700;
+  color: #2d5fa6;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+
+.prayer-text { font-size: 0.95rem; color: #333; }
+
+.no-prayers { color: #888; font-size: 0.9rem; }
+
+.post-prayer {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.prayer-input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.btn-post {
+  background: #2d5fa6;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.btn-post:hover { background: #1e4a8a; }
+
+.right-sidebar { width: 260px; flex-shrink: 0; }
+
+.payment-card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.payment-card h3 { font-size: 1rem; font-weight: 700; }
+
+.price-option {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.price {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.price span { font-size: 0.85rem; font-weight: 400; color: #555; }
+
+.btn-stripe {
+  background: #2d5fa6;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.9rem;
+  width: 100%;
+}
+
+.btn-stripe:hover { background: #1e4a8a; }
+
+.divider { text-align: center; color: #aaa; font-size: 0.85rem; }
+
+.message {
+  font-size: 0.85rem;
+  color: #c0392b;
+  text-align: center;
+}
