@@ -1,1 +1,11 @@
-npm run build
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "npm run build"
+  },
+  "deploy": {
+    "startCommand": "npx serve dist -p $PORT",
+    "restartPolicyType": "ON_FAILURE"
+  }
+}
