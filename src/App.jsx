@@ -16,7 +16,10 @@ function App() {
   const [newPrayer, setNewPrayer] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [authMode, setAuthMode] = useState('login')
+  const [isResettingPassword, setIsResettingPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
 
@@ -26,9 +29,8 @@ function App() {
     })
     supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'PASSWORD_RECOVERY') {
-        setUser(null)
-        setAuthMode('login')
-        setMessage('You can now set a new password after logging in.')
+        setIsResettingPassword(true)
+        setUser(session?.user ?? null)
         return
       }
       setUser(session?.user ?? null)
@@ -67,8 +69,32 @@ function App() {
     setLoading(false)
   }
 
+  const handlePasswordReset = async () => {
+    setMessage('')
+    if (newPassword.length < 8) {
+      setMessage('Password must be at least 8 characters.')
+      return
+    }
+    if (newPassword !== confirmPassword) {
+      setMessage('Passwords do not match.')
+      return
+    }
+    setLoading(true)
+    const { error } = await supabase.auth.updateUser({ password: newPassword })
+    if (error) {
+      setMessage(error.message)
+    } else {
+      setMessage('Password updated successfully! You are now logged in.')
+      setIsResettingPassword(false)
+      setNewPassword('')
+      setConfirmPassword('')
+    }
+    setLoading(false)
+  }
+
   const handleLogout = async () => {
     await supabase.auth.signOut()
+    setIsResettingPassword(false)
   }
 
   const handlePostPrayer = async () => {
@@ -111,7 +137,18 @@ function App() {
 
       <div className="main">
         <aside className="sidebar">
-          {user ? (
+          {isResettingPassword ? (
+            <div className="auth-card">
+              <h3>Set New Password</h3>
+              <p style={{fontSize: '12px', color: '#aaa', marginBottom: '8px'}}>Must be at least 8 characters and different from your previous password.</p>
+              <input type="password" placeholder="New Password" value={newPassword} onChange={e => setNewPassword(e.target.value)} className="auth-input" />
+              <input type="password" placeholder="Confirm New Password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} className="auth-input" />
+              <button className="btn-primary" onClick={handlePasswordReset} disabled={loading}>
+                {loading ? 'Please wait...' : 'Update Password'}
+              </button>
+              {message && <p className="message">{message}</p>}
+            </div>
+          ) : user ? (
             <div className="profile-card">
               <div className="avatar">👤</div>
               <div className="username">{user.email.split('@')[0]}</div>
