@@ -69,6 +69,10 @@ function App() {
     setLoading(false)
   }
 
+  const handleAuthKeyDown = (e) => {
+    if (e.key === 'Enter') handleAuth()
+  }
+
   const handlePasswordReset = async () => {
     setMessage('')
     if (newPassword.length < 8) {
@@ -90,6 +94,10 @@ function App() {
       setConfirmPassword('')
     }
     setLoading(false)
+  }
+
+  const handlePasswordResetKeyDown = (e) => {
+    if (e.key === 'Enter') handlePasswordReset()
   }
 
   const handleLogout = async () => {
@@ -141,8 +149,8 @@ function App() {
             <div className="auth-card">
               <h3>Set New Password</h3>
               <p style={{fontSize: '12px', color: '#aaa', marginBottom: '8px'}}>Must be at least 8 characters and different from your previous password.</p>
-              <input type="password" placeholder="New Password" value={newPassword} onChange={e => setNewPassword(e.target.value)} className="auth-input" />
-              <input type="password" placeholder="Confirm New Password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} className="auth-input" />
+              <input type="password" placeholder="New Password" value={newPassword} onChange={e => setNewPassword(e.target.value)} onKeyDown={handlePasswordResetKeyDown} className="auth-input" />
+              <input type="password" placeholder="Confirm New Password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} onKeyDown={handlePasswordResetKeyDown} className="auth-input" />
               <button className="btn-primary" onClick={handlePasswordReset} disabled={loading}>
                 {loading ? 'Please wait...' : 'Update Password'}
               </button>
@@ -160,9 +168,9 @@ function App() {
               <h3>
                 {authMode === 'login' ? 'Login' : authMode === 'signup' ? 'Sign Up' : 'Reset Password'}
               </h3>
-              <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} className="auth-input" />
+              <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} onKeyDown={handleAuthKeyDown} className="auth-input" />
               {authMode !== 'forgot' && (
-                <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} className="auth-input" />
+                <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} onKeyDown={handleAuthKeyDown} className="auth-input" />
               )}
               <button className="btn-primary" onClick={handleAuth} disabled={loading}>
                 {loading ? 'Please wait...' : authMode === 'login' ? 'Login' : authMode === 'signup' ? 'Sign Up' : 'Send Reset Email'}
