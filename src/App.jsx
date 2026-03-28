@@ -47,10 +47,16 @@ function App() {
     if (authMode === 'login') {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) setMessage(error.message)
-    } else {
+    } else if (authMode === 'signup') {
       const { error } = await supabase.auth.signUp({ email, password })
       if (error) setMessage(error.message)
       else setMessage('Check your email to confirm your account!')
+    } else if (authMode === 'forgot') {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: 'https://ipraytonight.com'
+      })
+      if (error) setMessage(error.message)
+      else setMessage('Password reset email sent! Check your inbox.')
     }
     setLoading(false)
   }
@@ -104,14 +110,23 @@ function App() {
             </div>
           ) : (
             <div className="auth-card">
-              <h3>{authMode === 'login' ? 'Login' : 'Sign Up'}</h3>
+              <h3>
+                {authMode === 'login' ? 'Login' : authMode === 'signup' ? 'Sign Up' : 'Reset Password'}
+              </h3>
               <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} className="auth-input" />
-              <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} className="auth-input" />
+              {authMode !== 'forgot' && (
+                <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} className="auth-input" />
+              )}
               <button className="btn-primary" onClick={handleAuth} disabled={loading}>
-                {loading ? 'Please wait...' : authMode === 'login' ? 'Login' : 'Sign Up'}
+                {loading ? 'Please wait...' : authMode === 'login' ? 'Login' : authMode === 'signup' ? 'Sign Up' : 'Send Reset Email'}
               </button>
-              <p className="auth-switch" onClick={() => setAuthMode(authMode === 'login' ? 'signup' : 'login')}>
-                {authMode === 'login' ? 'New user? Sign up' : 'Have an account? Login'}
+              {authMode === 'login' && (
+                <p className="auth-switch" onClick={() => { setAuthMode('forgot'); setMessage('') }}>
+                  Forgot password?
+                </p>
+              )}
+              <p className="auth-switch" onClick={() => { setAuthMode(authMode === 'signup' ? 'login' : 'signup'); setMessage('') }}>
+                {authMode === 'login' ? 'New user? Sign up' : authMode === 'signup' ? 'Have an account? Login' : 'Back to login'}
               </p>
               {message && <p className="message">{message}</p>}
             </div>
