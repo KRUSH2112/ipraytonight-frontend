@@ -24,7 +24,13 @@ function App() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
     })
-    supabase.auth.onAuthStateChange((_event, session) => {
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setUser(null)
+        setAuthMode('login')
+        setMessage('You can now set a new password after logging in.')
+        return
+      }
       setUser(session?.user ?? null)
     })
     fetchPrayers()
@@ -78,6 +84,10 @@ function App() {
     }
   }
 
+  const handlePrayerKeyDown = (e) => {
+    if (e.key === 'Enter') handlePostPrayer()
+  }
+
   const handleBuyPack = async (type) => {
     try {
       const res = await axios.post(`${API}/create-checkout-session`, { type })
@@ -125,8 +135,8 @@ function App() {
                   Forgot password?
                 </p>
               )}
-              <p className="auth-switch" onClick={() => { setAuthMode(authMode === 'signup' ? 'login' : 'signup'); setMessage('') }}>
-                {authMode === 'login' ? 'New user? Sign up' : authMode === 'signup' ? 'Have an account? Login' : 'Back to login'}
+              <p className="auth-switch" onClick={() => { setAuthMode(authMode === 'signup' ? 'login' : authMode === 'forgot' ? 'login' : 'signup'); setMessage('') }}>
+                {authMode === 'login' ? 'New user? Sign up' : 'Back to login'}
               </p>
               {message && <p className="message">{message}</p>}
             </div>
@@ -148,7 +158,14 @@ function App() {
             ))}
           </div>
           <div className="post-prayer">
-            <input type="text" placeholder="Post a prayer request..." value={newPrayer} onChange={e => setNewPrayer(e.target.value)} className="prayer-input" />
+            <input
+              type="text"
+              placeholder="Post a prayer request..."
+              value={newPrayer}
+              onChange={e => setNewPrayer(e.target.value)}
+              onKeyDown={handlePrayerKeyDown}
+              className="prayer-input"
+            />
             <button className="btn-post" onClick={handlePostPrayer}>Post</button>
           </div>
           {message && <p className="message">{message}</p>}
