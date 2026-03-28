@@ -69,7 +69,76 @@ body {
   box-shadow: 0 1px 4px rgba(0,0,0,0.1);
 }
 
-.avatar { font-size: 3rem; }
+.avatar-wrapper {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  cursor: pointer;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.avatar-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatar-fallback {
+  display: none;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #e0e0e0;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+}
+
+.avatar-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0,0,0,0.4);
+  color: white;
+  font-size: 1rem;
+  text-align: center;
+  padding: 2px 0;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.avatar-wrapper:hover .avatar-overlay {
+  opacity: 1;
+}
+
+.prayer-avatar-wrap {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.prayer-avatar-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.prayer-avatar-fallback {
+  display: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #e0e0e0;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+}
+
 .username { font-weight: 700; font-size: 1rem; }
 .user-email-small { font-size: 0.75rem; color: #666; text-align: center; }
 
@@ -151,8 +220,6 @@ body {
   box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   flex-shrink: 0;
 }
-
-.prayer-avatar { font-size: 2rem; }
 
 .prayer-user {
   font-weight: 700;

@@ -9,10 +9,13 @@ const supabase = createClient(
 )
 
 const API = 'https://ipraytonight-production.up.railway.app'
+const SUPABASE_URL = 'https://nomejfcrioshhgbpgfgj.supabase.co'
 
 function App() {
   const [user, setUser] = useState(null)
   const [prayers, setPrayers] = useState([])
+  const [avatarUrl, setAvatarUrl] = useState(null)
+  const [avatarMap, setAvatarMap] = useState({})
   const [newPrayer, setNewPrayer] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -21,11 +24,13 @@ function App() {
   const [authMode, setAuthMode] = useState('login')
   const [isResettingPassword, setIsResettingPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [message, setMessage] = useState('')
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
+      if (session?.user) loadAvatar(session.user.id)
     })
     supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'PASSWORD_RECOVERY') {
@@ -34,19 +39,57 @@ function App() {
         return
       }
       setUser(session?.user ?? null)
+      if (session?.user) loadAvatar(session.user.id)
     })
     fetchPrayers()
     const interval = setInterval(fetchPrayers, 10000)
     return () => clearInterval(interval)
   }, [])
 
+  const loadAvatar = async (uid) => {
+    const url = `${SUPABASE_URL}/storage/v1/object/public/Avatars/${uid}/avatar`
+    setAvatarUrl(url)
+  }
+
   const fetchPrayers = async () => {
     try {
       const res = await axios.get(`${API}/prayers`)
       setPrayers(res.data)
+      buildAvatarMap(res.data)
     } catch (e) {
       console.error(e)
     }
+  }
+
+  const buildAvatarMap = (prayers) => {
+    const map = {}
+    prayers.forEach(p => {
+      if (p.user_id && !map[p.user_id]) {
+        map[p.user_id] = true
+      }
+    })
+    setAvatarMap(map)
+  }
+
+  const getAvatarUrl = (userId) => {
+    return `${SUPABASE_URL}/storage/v1/object/public/Avatars/${userId}/avatar`
+  }
+
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files[0]
+    if (!file || !user) return
+    setUploading(true)
+    setMessage('')
+    const { error } = await supabase.storage
+      .from('Avatars')
+      .upload(`${user.id}/avatar`, file, { upsert: true })
+    if (error) {
+      setMessage('Error uploading photo: ' + error.message)
+    } else {
+      setMessage('Profile photo updated!')
+      setAvatarUrl(`${SUPABASE_URL}/storage/v1/object/public/Avatars/${user.id}/avatar?t=${Date.now()}`)
+    }
+    setUploading(false)
   }
 
   const handleAuth = async () => {
@@ -103,13 +146,14 @@ function App() {
   const handleLogout = async () => {
     await supabase.auth.signOut()
     setIsResettingPassword(false)
+    setAvatarUrl(null)
   }
 
   const handlePostPrayer = async () => {
     if (!newPrayer.trim()) return
     if (!user) { setMessage('Please log in to post a prayer.'); return }
     try {
-      await axios.post(`${API}/prayers`, { text: newPrayer, user_id: user.email })
+      await axios.post(`${API}/prayers`, { text: newPrayer, user_id: user.id })
       setNewPrayer('')
       setMessage('')
       fetchPrayers()
@@ -158,10 +202,22 @@ function App() {
             </div>
           ) : user ? (
             <div className="profile-card">
-              <div className="avatar">👤</div>
+              <div className="avatar-wrapper" onClick={() => document.getElementById('avatar-upload').click()}>
+                <img
+                  src={avatarUrl}
+                  alt="avatar"
+                  className="avatar-img"
+                  onError={e => { e.target.style.display='none'; e.target.nextSibling.style.display='flex' }}
+                />
+                <div className="avatar-fallback">👤</div>
+                <div className="avatar-overlay">📷</div>
+              </div>
+              <input id="avatar-upload" type="file" accept="image/*" style={{display:'none'}} onChange={handleAvatarUpload} />
+              {uploading && <p style={{fontSize:'11px', color:'#888'}}>Uploading...</p>}
               <div className="username">{user.email.split('@')[0]}</div>
               <div className="user-email-small">{user.email}</div>
               <button className="btn-logout-full" onClick={handleLogout}>Logout</button>
+              {message && <p className="message">{message}</p>}
             </div>
           ) : (
             <div className="auth-card">
@@ -194,7 +250,15 @@ function App() {
             {prayers.length === 0 && <p className="no-prayers">No prayers yet. Be the first!</p>}
             {prayers.map((prayer, i) => (
               <div className="prayer-card" key={i}>
-                <div className="prayer-avatar">👤</div>
+                <div className="prayer-avatar-wrap">
+                  <img
+                    src={getAvatarUrl(prayer.user_id)}
+                    alt=""
+                    className="prayer-avatar-img"
+                    onError={e => { e.target.style.display='none'; e.target.nextSibling.style.display='flex' }}
+                  />
+                  <div className="prayer-avatar-fallback">👤</div>
+                </div>
                 <div className="prayer-body">
                   <div className="prayer-user">{prayer.user_id || 'Anonymous'}</div>
                   <div className="prayer-text">{prayer.text}</div>
